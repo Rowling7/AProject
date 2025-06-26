@@ -26,6 +26,14 @@
             android:exported="false"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ScriptManagerActivity"
+            android:exported="false"
+            android:label="@string/script_manager" />
+        <activity
+            android:name=".ScriptEditorActivity"
+            android:exported="false"
+            android:label="@string/script_editor" />
     </application>
 
 </manifest>

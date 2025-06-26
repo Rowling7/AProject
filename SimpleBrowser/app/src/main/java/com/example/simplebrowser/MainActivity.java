@@ -29,7 +29,10 @@ public class MainActivity extends AppCompatActivity {
         searchEditText = findViewById(R.id.searchEditText);
         engineRadioGroup = findViewById(R.id.engineRadioGroup);
         Button searchButton = findViewById(R.id.searchButton);
-
+        Button scriptManagerButton = findViewById(R.id.scriptManagerButton);
+        scriptManagerButton.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, ScriptManagerActivity.class));
+        });
         searchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
