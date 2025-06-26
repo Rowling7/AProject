@@ -16,6 +16,7 @@
     <string name="add_script">添加脚本</string>
 
     <string name="script_manager">脚本管理</string>
+    <string name="history">历史记录</string>
     <string name="script_editor">编辑脚本</string>
 
     <string name="toggle_script">启用/停用</string>

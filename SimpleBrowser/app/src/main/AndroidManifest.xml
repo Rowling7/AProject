@@ -35,6 +35,10 @@
             android:name=".ScriptEditorActivity"
             android:exported="false"
             android:label="@string/script_editor" />
+        <activity
+            android:name=".HistoryActivity"
+            android:label="@string/history"
+            android:exported="false" />
     </application>
 
 </manifest>

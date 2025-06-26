@@ -11,13 +11,10 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
-
     private EditText searchEditText;
     private RadioGroup engineRadioGroup;
 
@@ -29,10 +26,21 @@ public class MainActivity extends AppCompatActivity {
         searchEditText = findViewById(R.id.searchEditText);
         engineRadioGroup = findViewById(R.id.engineRadioGroup);
         Button searchButton = findViewById(R.id.searchButton);
+        Button historyButton = findViewById(R.id.historyButton);
         Button scriptManagerButton = findViewById(R.id.scriptManagerButton);
-        scriptManagerButton.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, ScriptManagerActivity.class));
+
+        // 设置历史按钮点击事件
+        historyButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+            startActivity(intent);
         });
+
+        // 设置脚本管理按钮点击事件
+        scriptManagerButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ScriptManagerActivity.class);
+            startActivity(intent);
+        });
+
         searchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -63,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
 
         String url;
         if (isUrl(query)) {
-            // 修改这里：默认使用 https:// 而不是 http://
             if (query.startsWith("http://") || query.startsWith("https://")) {
                 url = query;
             } else {
@@ -85,12 +92,11 @@ public class MainActivity extends AppCompatActivity {
     private boolean isUrl(String input) {
         final Pattern URL_PATTERN = Pattern.compile(
                 "^(https?:\\/\\/)?" + // 协议
-                        "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // 域名
-                        "((\\d{1,3}\\.){3}\\d{1,3}))" + // 或 IP 地址
-                        "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // 端口和路径
-                        "(\\?[;&a-z\\d%_.~+=-]*)?" + // 查询字符串
-                        "(\\#[-a-z\\d_]*)?$", Pattern.CASE_INSENSITIVE);
-
+                "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // 域名
+                "((\\d{1,3}\\.){3}\\d{1,3}))" + // 或 IP 地址
+                "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // 端口和路径
+                "(\\?[;&a-z\\d%_.~+=-]*)?" + // 查询字符串
+                "(\\#[-a-z\\d_]*)?$", Pattern.CASE_INSENSITIVE);
         return URL_PATTERN.matcher(input).matches();
     }
 }

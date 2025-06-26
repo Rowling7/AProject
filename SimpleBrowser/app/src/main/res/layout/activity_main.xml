@@ -47,6 +47,13 @@
             android:layout_height="wrap_content"
             android:text="@string/baidu" />
     </RadioGroup>
+
+    <Button
+        android:id="@+id/historyButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/history" />
     <Button
         android:id="@+id/scriptManagerButton"
     android:layout_width="match_parent"
