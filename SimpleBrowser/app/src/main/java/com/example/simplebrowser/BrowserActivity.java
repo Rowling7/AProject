@@ -12,10 +12,14 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.net.http.SslError;
 import android.webkit.WebSettings;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,16 +36,28 @@ public class BrowserActivity extends AppCompatActivity {
 
         webView = findViewById(R.id.webView);
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        FloatingActionButton fabBackToMain = findViewById(R.id.fabBackToMain);
 
         setupWebView();
         setupSwipeRefresh();
-
+        // 设置悬浮按钮点击事件
+        fabBackToMain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                returnToMainActivity();
+            }
+        });
         String url = getIntent().getStringExtra("url");
         if (url != null) {
             webView.loadUrl(url);
         }
     }
-
+    private void returnToMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+        finish(); // 关闭当前BrowserActivity
+    }
     private void setupWebView() {
         WebSettings webSettings = webView.getSettings();
 
@@ -95,10 +111,10 @@ public class BrowserActivity extends AppCompatActivity {
 
         // 设置下拉刷新颜色
         swipeRefreshLayout.setColorSchemeResources(
-            android.R.color.holo_blue_bright,
-            android.R.color.holo_green_light,
-            android.R.color.holo_orange_light,
-            android.R.color.holo_red_light
+                android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light
         );
     }
 
