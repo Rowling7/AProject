@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,11 +14,14 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,9 +57,9 @@ public class HistoryActivity extends AppCompatActivity {
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject json = jsonArray.getJSONObject(i);
                 historyItems.add(new HistoryItem(
-                    json.getString("title"),
-                    json.getString("url"),
-                    json.getLong("timestamp")
+                        json.getString("title"),
+                        json.getString("url"),
+                        json.getLong("timestamp")
                 ));
             }
         } catch (JSONException e) {
@@ -86,6 +90,13 @@ public class HistoryActivity extends AppCompatActivity {
         adapter = new HistoryAdapter(this, historyItems);
         historyListView.setAdapter(adapter);
 
+        // 设置点击事件
+        historyListView.setOnItemClickListener((parent, view, position, id) -> {
+            if (!adapter.isSelectionMode()) {
+                String url = historyItems.get(position).getUrl();
+                returnUrlToBrowser(url);
+            }
+        });
         // 长按删除单项
         historyListView.setOnItemLongClickListener((parent, view, position, id) -> {
             showDeleteDialog(position);
@@ -148,6 +159,14 @@ public class HistoryActivity extends AppCompatActivity {
         });
     }
 
+    private void returnUrlToBrowser(String url) {
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("url", url);
+        setResult(RESULT_OK, resultIntent);  // 关键点：设置返回结果
+        finish();  // 关闭当前Activity
+        Log.d("History", "返回URL: " + url);
+    }
+
     private void setupButtons() {
         btnDeleteAll.setOnClickListener(v -> showDeleteAllDialog());
 
@@ -169,30 +188,31 @@ public class HistoryActivity extends AppCompatActivity {
         });
     }
 
+
     private void showDeleteDialog(int position) {
         new AlertDialog.Builder(this)
-            .setTitle("删除记录")
-            .setMessage("确定要删除这条记录吗?")
-            .setPositiveButton("删除", (dialog, which) -> {
-                historyItems.remove(position);
-                saveHistory();
-                adapter.notifyDataSetChanged();
-            })
-            .setNegativeButton("取消", null)
-            .show();
+                .setTitle("删除记录")
+                .setMessage("确定要删除这条记录吗?")
+                .setPositiveButton("删除", (dialog, which) -> {
+                    historyItems.remove(position);
+                    saveHistory();
+                    adapter.notifyDataSetChanged();
+                })
+                .setNegativeButton("取消", null)
+                .show();
     }
 
     private void showDeleteAllDialog() {
         new AlertDialog.Builder(this)
-            .setTitle("删除全部")
-            .setMessage("确定要删除所有历史记录吗?")
-            .setPositiveButton("删除", (dialog, which) -> {
-                historyItems.clear();
-                saveHistory();
-                adapter.notifyDataSetChanged();
-            })
-            .setNegativeButton("取消", null)
-            .show();
+                .setTitle("删除全部")
+                .setMessage("确定要删除所有历史记录吗?")
+                .setPositiveButton("删除", (dialog, which) -> {
+                    historyItems.clear();
+                    saveHistory();
+                    adapter.notifyDataSetChanged();
+                })
+                .setNegativeButton("取消", null)
+                .show();
     }
 
     private void deleteSelectedItems() {
