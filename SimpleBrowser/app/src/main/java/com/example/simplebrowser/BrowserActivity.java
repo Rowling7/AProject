@@ -1,22 +1,22 @@
 package com.example.simplebrowser;
 
-import android.content.SharedPreferences;
+import android.annotation.SuppressLint;
+import android.os.Build;
 import android.os.Bundle;
-import android.webkit.JavascriptInterface;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.net.http.SslError;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import org.json.JSONArray;
-import org.json.JSONException;
-import java.util.ArrayList;
-import java.util.List;
-import com.example.simplebrowser.UserScript;
 
 public class BrowserActivity extends AppCompatActivity {
     private WebView webView;
-    private List<UserScript> userScripts = new ArrayList<>();
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,7 +24,6 @@ public class BrowserActivity extends AppCompatActivity {
 
         webView = findViewById(R.id.webView);
         setupWebView();
-        loadUserScripts();
 
         String url = getIntent().getStringExtra("url");
         if (url != null) {
@@ -34,51 +33,86 @@ public class BrowserActivity extends AppCompatActivity {
 
     private void setupWebView() {
         WebSettings webSettings = webView.getSettings();
+
+        // 基础设置
         webSettings.setJavaScriptEnabled(true);
         webSettings.setDomStorageEnabled(true);
-        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+        webSettings.setDatabaseEnabled(true);
+        webSettings.setAllowFileAccess(true);
+        webSettings.setAllowContentAccess(true);
 
-        webView.addJavascriptInterface(new ScriptInterface(), "AndroidScriptInterface");
+        // 缓存设置
+        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
 
-        webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                injectAllScripts();
-            }
-        });
+        // 自适应设置
+        webSettings.setUseWideViewPort(true);
+        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setBuiltInZoomControls(true);
+        webSettings.setDisplayZoomControls(false);
+
+        // 混合内容处理 (HTTP+HTTPS)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        }
+
+        // 设置自定义WebViewClient
+        webView.setWebViewClient(new CustomWebViewClient());
+
+        // 设置WebChromeClient以处理进度条等
+        webView.setWebChromeClient(new WebChromeClient());
     }
 
-    private void loadUserScripts() {
-        SharedPreferences prefs = getSharedPreferences("user_scripts", MODE_PRIVATE);
-        String scriptsJson = prefs.getString("scripts", "[]");
+    /**
+     * 自定义WebViewClient以处理SSL错误和其他页面控制
+     */
+    private class CustomWebViewClient extends WebViewClient {
+        // 处理SSL错误（包括证书过期、无效等）
+        @Override
+        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+            // 忽略所有SSL错误，继续加载
+            handler.proceed();
 
-        try {
-            JSONArray jsonArray = new JSONArray(scriptsJson);
-            userScripts.clear();
-
-            for (int i = 0; i < jsonArray.length(); i++) {
-                userScripts.add(UserScript.fromJson(jsonArray.getJSONObject(i)));
+            // 如果需要可以根据错误类型定制处理
+            /*
+            switch(error.getPrimaryError()) {
+                case SslError.SSL_EXPIRED:
+                case SslError.SSL_IDMISMATCH:
+                case SslError.SSL_NOTYETVALID:
+                case SslError.SSL_UNTRUSTED:
+                    handler.proceed();
+                    break;
+                default:
+                    handler.cancel();
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
+            */
+        }
+
+        // 处理页面加载
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            view.loadUrl(url);
+            return true;
+        }
+
+        // 处理API 24+的页面加载
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            view.loadUrl(request.getUrl().toString());
+            return true;
         }
     }
 
-    private void injectAllScripts() {
-        String currentUrl = webView.getUrl();
-        if (currentUrl == null) return;
-
-        for (UserScript script : userScripts) {
-            if (script.isEnabled() && script.matchesUrl(currentUrl)) {
-                injectScript(script.getCode());
-            }
-        }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        webView.onPause();
     }
 
-    private void injectScript(String script) {
-        String wrappedScript = "(function(){" + script + "})();";
-        webView.evaluateJavascript(wrappedScript, null);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        webView.onResume();
     }
 
     @Override
@@ -90,10 +124,11 @@ public class BrowserActivity extends AppCompatActivity {
         }
     }
 
-    public class ScriptInterface {
-        @JavascriptInterface
-        public void showToast(String message) {
-            // 可扩展更多JS与Android交互功能
+    @Override
+    protected void onDestroy() {
+        if (webView != null) {
+            webView.destroy();
         }
+        super.onDestroy();
     }
 }
