@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">SimpleBrowser</string>
+    <string name="search_hint">输入网址或搜索内容</string>
+    <string name="search_button">搜索</string>
+    <string name="bing">Bing</string>
+    <string name="baidu">百度</string>
+    <string name="search_engine">搜索引擎</string>
+</resources>
