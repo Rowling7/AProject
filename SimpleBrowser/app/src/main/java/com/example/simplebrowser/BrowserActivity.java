@@ -1,34 +1,12 @@
 package com.example.simplebrowser;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.Toast;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.appcompat.app.AppCompatActivity;
+public class BrowserActivity extends BaseActivity {
 
-import android.net.http.SslError;
-import android.webkit.WebSettings;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-public class BrowserActivity extends AppCompatActivity {
-    private WebView webView;
-    private SwipeRefreshLayout swipeRefreshLayout;
-
-    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,114 +18,12 @@ public class BrowserActivity extends AppCompatActivity {
 
         setupWebView();
         setupSwipeRefresh();
-        // 设置悬浮按钮点击事件
-        fabBackToMain.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                returnToMainActivity();
-            }
-        });
+
+        fabBackToMain.setOnClickListener(v -> returnToMainActivity());
+
         String url = getIntent().getStringExtra("url");
         if (url != null) {
             webView.loadUrl(url);
-        }
-    }
-    private void returnToMainActivity() {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
-        finish(); // 关闭当前BrowserActivity
-    }
-    private void setupWebView() {
-        WebSettings webSettings = webView.getSettings();
-
-        // 基础设置
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setDomStorageEnabled(true);
-        webSettings.setDatabaseEnabled(true);
-        webSettings.setLoadWithOverviewMode(true);
-        webSettings.setUseWideViewPort(true);
-
-        // 缓存设置
-        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
-
-        // 混合内容处理
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-        }
-
-        webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                super.onPageStarted(view, url, favicon);
-                swipeRefreshLayout.setRefreshing(true);
-            }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                swipeRefreshLayout.setRefreshing(false);
-                addToHistory(view.getTitle(), url);
-            }
-
-            @Override
-            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                super.onReceivedError(view, request, error);
-                swipeRefreshLayout.setRefreshing(false);
-                Toast.makeText(BrowserActivity.this, "加载页面出错", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                handler.proceed(); // 忽略SSL证书错误
-            }
-        });
-    }
-
-    private void setupSwipeRefresh() {
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            webView.reload();
-        });
-
-        // 设置下拉刷新颜色
-        swipeRefreshLayout.setColorSchemeResources(
-                android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light
-        );
-    }
-
-    private void addToHistory(String title, String url) {
-        SharedPreferences prefs = getSharedPreferences("browser_history", MODE_PRIVATE);
-        JSONArray jsonArray;
-        try {
-            jsonArray = new JSONArray(prefs.getString("history", "[]"));
-
-            // 检查是否已存在相同URL的记录
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject item = jsonArray.getJSONObject(i);
-                if (item.getString("url").equals(url)) {
-                    jsonArray.remove(i);
-                    break;
-                }
-            }
-
-            // 添加新记录
-            JSONObject newItem = new JSONObject();
-            newItem.put("title", title != null ? title : "无标题");
-            newItem.put("url", url);
-            newItem.put("timestamp", System.currentTimeMillis());
-            jsonArray.put(newItem);
-
-            // 限制历史记录数量
-            while (jsonArray.length() > 100) {
-                jsonArray.remove(0);
-            }
-
-            prefs.edit().putString("history", jsonArray.toString()).apply();
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
     }
 
@@ -168,31 +44,26 @@ public class BrowserActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        if (webView.canGoBack()) {
-            webView.goBack();
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
-        webView.onPause();
+        if (webView != null) {
+            webView.onPause();
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        webView.onResume();
+        if (webView != null) {
+            webView.onResume();
+        }
     }
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
         if (webView != null) {
             webView.destroy();
         }
-        super.onDestroy();
     }
 }
