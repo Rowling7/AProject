@@ -16,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.simplebrowser.browser.BrowserActivity;
 import com.example.simplebrowser.history.HistoryActivity;
-import com.example.simplebrowser.scrpit.ScriptManagerActivity;
+import com.example.simplebrowser.script.ScriptManagerActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.regex.Pattern;
@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         // 设置脚本管理按钮点击事件
         scriptManagerButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ScriptManagerActivity.class);
+            overridePendingTransition(0, 0);//取消动画
             startActivity(intent);
         });
 

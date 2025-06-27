@@ -19,4 +19,11 @@
         android:layout_marginTop="16dp"
         android:text="@string/add_script"/>
 
+    <Button
+        android:id="@+id/exportScriptButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="导出脚本"/>
+
 </LinearLayout>

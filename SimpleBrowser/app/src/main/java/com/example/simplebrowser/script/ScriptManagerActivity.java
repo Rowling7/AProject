@@ -1,8 +1,9 @@
-package com.example.simplebrowser.scrpit;
+package com.example.simplebrowser.script;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,16 +15,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.simplebrowser.R;
+import com.example.simplebrowser.script.UserScript;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ScriptManagerActivity extends AppCompatActivity {
+    private static final int REQUEST_WRITE_STORAGE = 112;
+    private static final int REQUEST_CREATE_DOCUMENT = 1; // 新增常量
     private ListView scriptsListView;
     private List<UserScript> userScripts = new ArrayList<>();
     private ScriptAdapter adapter;
@@ -43,6 +51,60 @@ public class ScriptManagerActivity extends AppCompatActivity {
         addScriptButton.setOnClickListener(v -> {
             startActivity(new Intent(ScriptManagerActivity.this, ScriptEditorActivity.class));
         });
+
+        // 导出按钮点击事件
+        Button exportScriptButton = findViewById(R.id.exportScriptButton);
+        exportScriptButton.setOnClickListener(v -> {
+            // 启动文件创建意图让用户选择保存位置
+            Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_TITLE, "scripts.txt");
+            startActivityForResult(intent, REQUEST_CREATE_DOCUMENT);
+        });
+    }
+
+    // 使用 onActivityResult 处理用户选择的文件 URI
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CREATE_DOCUMENT && resultCode == RESULT_OK) {
+            Uri uri = data.getData();
+            exportScriptsToFile(uri);
+        }
+    }
+
+    // 导出脚本到用户选择的文件
+    private void exportScriptsToFile(Uri uri) {
+        SharedPreferences prefs = getSharedPreferences("user_scripts", MODE_PRIVATE);
+        String scriptsJson = prefs.getString("scripts", "[]");
+
+        try {
+            JSONArray jsonArray = new JSONArray(scriptsJson);
+            StringBuilder content = new StringBuilder();
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject json = jsonArray.getJSONObject(i);
+                content.append("Name: ").append(json.getString("name")).append("\n");
+                content.append("Code: ").append(json.getString("code")).append("\n");
+                content.append("Match Pattern: ").append(json.getString("matchPattern")).append("\n");
+                content.append("Enabled: ").append(json.getBoolean("enabled") ? "Yes" : "No").append("\n\n");
+            }
+
+            // 写入文件
+            try (FileOutputStream fos = (FileOutputStream) getContentResolver().openOutputStream(uri)) {
+                if (fos != null) {
+                    fos.write(content.toString().getBytes());
+                    Toast.makeText(this, "脚本已导出至 " + uri.toString(), Toast.LENGTH_LONG).show();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "导出失败: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "解析脚本失败", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private class ScriptAdapter extends ArrayAdapter<UserScript> {

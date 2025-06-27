@@ -1,4 +1,4 @@
-package com.example.simplebrowser.scrpit;
+package com.example.simplebrowser.script;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -55,7 +55,7 @@ public class ScriptEditorActivity extends AppCompatActivity {
     }
 
     private void setDefaultScriptContent() {
-        codeEditText.setText("// 在这里编写你的脚本\n// 例如：\ndocument.querySelectorAll('.ad').forEach(el => el.remove());");
+        codeEditText.setText("");
         matchEditText.setText("*");
     }
 

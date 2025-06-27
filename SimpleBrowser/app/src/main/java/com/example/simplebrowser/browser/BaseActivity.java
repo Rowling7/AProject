@@ -26,7 +26,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.simplebrowser.MainActivity;
 import com.example.simplebrowser.R;
-import com.example.simplebrowser.scrpit.UserScript;
+import com.example.simplebrowser.script.UserScript;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -106,6 +106,12 @@ public class BaseActivity extends AppCompatActivity {
         webSettings.setDomStorageEnabled(true);
         webSettings.setLoadWithOverviewMode(true);
         webSettings.setUseWideViewPort(true);
+
+        // 添加以下缩放设置
+        webSettings.setSupportZoom(true);
+        webSettings.setBuiltInZoomControls(true);
+        webSettings.setDisplayZoomControls(false);
+        webSettings.setMinimumLogicalFontSize(8);
 
         if (isDarkModeEnabled()) {
             updateUiForDarkMode();

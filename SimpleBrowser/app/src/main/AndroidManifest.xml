@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -29,11 +30,11 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".scrpit.ScriptManagerActivity"
+            android:name=".script.ScriptManagerActivity"
             android:exported="false"
             android:label="@string/script_manager" />
         <activity
-            android:name=".scrpit.ScriptEditorActivity"
+            android:name=".script.ScriptEditorActivity"
             android:exported="false"
             android:label="@string/script_editor" />
         <activity
