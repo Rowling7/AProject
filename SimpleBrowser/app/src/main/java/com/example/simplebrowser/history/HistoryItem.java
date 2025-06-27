@@ -1,4 +1,4 @@
-package com.example.simplebrowser;
+package com.example.simplebrowser.history;
 
 public class HistoryItem {
     private String title;

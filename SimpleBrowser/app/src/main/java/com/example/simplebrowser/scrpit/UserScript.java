@@ -1,4 +1,4 @@
-package com.example.simplebrowser;
+package com.example.simplebrowser.scrpit;
 
 import org.json.JSONException;
 import org.json.JSONObject;

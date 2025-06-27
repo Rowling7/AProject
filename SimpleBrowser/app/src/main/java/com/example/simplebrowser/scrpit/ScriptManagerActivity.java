@@ -1,4 +1,4 @@
-package com.example.simplebrowser;
+package com.example.simplebrowser.scrpit;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +14,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.simplebrowser.R;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

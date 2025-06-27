@@ -1,4 +1,4 @@
-package com.example.simplebrowser;
+package com.example.simplebrowser.scrpit;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.simplebrowser.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;

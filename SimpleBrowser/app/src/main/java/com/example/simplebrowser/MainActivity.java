@@ -12,6 +12,11 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.simplebrowser.browser.BrowserActivity;
+import com.example.simplebrowser.history.HistoryActivity;
+import com.example.simplebrowser.scrpit.ScriptManagerActivity;
+
 import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {

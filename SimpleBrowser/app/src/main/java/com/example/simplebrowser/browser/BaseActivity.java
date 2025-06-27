@@ -1,4 +1,4 @@
-package com.example.simplebrowser;
+package com.example.simplebrowser.browser;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -9,7 +9,6 @@ import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -19,12 +18,15 @@ import android.webkit.WebViewClient;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.example.simplebrowser.MainActivity;
+import com.example.simplebrowser.R;
+import com.example.simplebrowser.scrpit.UserScript;
 
 import org.json.JSONArray;
 import org.json.JSONException;

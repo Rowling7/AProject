@@ -24,20 +24,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".BrowserActivity"
+            android:name=".browser.BrowserActivity"
             android:exported="false"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ScriptManagerActivity"
+            android:name=".scrpit.ScriptManagerActivity"
             android:exported="false"
             android:label="@string/script_manager" />
         <activity
-            android:name=".ScriptEditorActivity"
+            android:name=".scrpit.ScriptEditorActivity"
             android:exported="false"
             android:label="@string/script_editor" />
         <activity
-            android:name=".HistoryActivity"
+            android:name=".history.HistoryActivity"
             android:label="@string/history"
             android:exported="false" />
     </application>

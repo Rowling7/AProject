@@ -1,6 +1,5 @@
-package com.example.simplebrowser;
+package com.example.simplebrowser.history;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,13 +9,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.simplebrowser.browser.BrowserActivity;
+import com.example.simplebrowser.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
