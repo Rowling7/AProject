@@ -56,4 +56,9 @@ public class UserScript {
         }
         return url.contains(matchPattern);
     }
+    // 在UserScript.java中添加
+public String getExecutableScript() {
+    return "(function() { try {" + code + "} catch(e) { console.error('Script error:', e); } })();";
+}
+
 }

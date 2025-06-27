@@ -103,7 +103,7 @@ public class HistoryActivity extends AppCompatActivity {
                 Intent browserIntent = new Intent(HistoryActivity.this, BrowserActivity.class);
                 browserIntent.putExtra("url", url);
                 startActivity(browserIntent);
-                
+
             }
         });
 

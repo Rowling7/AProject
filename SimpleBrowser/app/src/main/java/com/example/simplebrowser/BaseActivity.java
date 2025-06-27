@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebResourceError;
@@ -28,6 +29,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.net.URLEncoder;
 
 public class BaseActivity extends AppCompatActivity {
     protected WebView webView;
@@ -127,6 +130,7 @@ public class BaseActivity extends AppCompatActivity {
                     swipeRefreshLayout.setRefreshing(false);
                 }
                 addToHistory(view.getTitle(), url);
+                injectMatchingScripts(url);
             }
 
             @Override
@@ -143,6 +147,31 @@ public class BaseActivity extends AppCompatActivity {
                 handler.proceed();
             }
         });
+    }
+
+    protected void injectMatchingScripts(String url) {
+        SharedPreferences prefs = getSharedPreferences("user_scripts", MODE_PRIVATE);
+        String scriptsJson = prefs.getString("scripts", "[]");
+
+        try {
+            JSONArray jsonArray = new JSONArray(scriptsJson);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject json = jsonArray.getJSONObject(i);
+                UserScript script = UserScript.fromJson(json);
+
+                if (script.isEnabled() && script.matchesUrl(url)) {
+                    String jsCode = script.getExecutableScript();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        webView.evaluateJavascript(jsCode, null);
+                    } else {
+                        webView.loadUrl("javascript:" + URLEncoder.encode(jsCode, "UTF-8"));
+                    }
+                    Log.d("ScriptInjection", "Injected script: " + script.getName());
+                }
+            }
+        } catch (Exception e) {
+            Log.e("ScriptInjection", "Error injecting scripts", e);
+        }
     }
 
     protected void injectDarkModeCSS(WebView webView) {
