@@ -24,7 +24,7 @@
     <string name="delete_script">删除</string>
     <string name="confirm_delete">确认删除</string>
     <string name="delete_confirm_message">确定要删除脚本 %s 吗?</string>
-    <string name="delete">删除</string>
-    <string name="cancel">取消</string>
-
+    <string name="back">返回</string>
+    <string name="home">主页</string>
+    <string name="settings">设置</string>
 </resources>

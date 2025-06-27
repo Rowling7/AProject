@@ -16,8 +16,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.simplebrowser.MainActivity;
 import com.example.simplebrowser.browser.BrowserActivity;
 import com.example.simplebrowser.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,6 +33,7 @@ public class HistoryActivity extends AppCompatActivity {
     private HistoryAdapter adapter;
     private List<HistoryItem> historyItems = new ArrayList<>();
     private Button btnDeleteSelected, btnDeleteAll, btnCancelSelection;
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +44,14 @@ public class HistoryActivity extends AppCompatActivity {
         btnDeleteSelected = findViewById(R.id.btnDeleteSelected);
         btnDeleteAll = findViewById(R.id.btnDeleteAll);
         btnCancelSelection = findViewById(R.id.btnCancelSelection);
+        bottomNavigationView = findViewById(R.id.bottom_nav);
 
+        overridePendingTransition(0, 0);  // 添加这行
         loadHistory();
         setupListView();
         setupButtons();
+        setupBottomNavigation();
+
     }
 
     private void loadHistory() {
@@ -97,14 +104,14 @@ public class HistoryActivity extends AppCompatActivity {
             return true;
         });
 
-        // 修改后的点击监听器：直接打开新实例
+        // 点击打开URL
         historyListView.setOnItemClickListener((parent, view, position, id) -> {
             if (!adapter.isSelectionMode()) {
                 String url = historyItems.get(position).getUrl();
                 Intent browserIntent = new Intent(HistoryActivity.this, BrowserActivity.class);
                 browserIntent.putExtra("url", url);
+                overridePendingTransition(0, 0);//取消动画
                 startActivity(browserIntent);
-
             }
         });
 
@@ -153,13 +160,32 @@ public class HistoryActivity extends AppCompatActivity {
         });
     }
 
-    private void returnUrlToBrowser(String url) {
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra("url", url);
-        setResult(RESULT_OK, resultIntent);  // 关键点：设置返回结果
-        finish();  // 关闭当前Activity
-        Log.d("History", "返回URL: " + url);
-    }
+    private void setupBottomNavigation() {
+    bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+        int id = item.getItemId();
+        if (id == R.id.nav_back) {
+            finish();
+            return true;
+        } else if (id == R.id.nav_home) {
+            Intent homeIntent = new Intent(this, MainActivity.class);
+            overridePendingTransition(0, 0);//取消动画
+            startActivity(homeIntent);
+            return true;
+        } else if (id == R.id.nav_history) {
+            // 已经在历史页面，无需处理
+            return true;
+        } else if (id == R.id.nav_settings) {
+            // 启动设置页面（假设有SettingsActivity）
+            Intent settingsIntent = new Intent(this, MainActivity.class);
+            overridePendingTransition(0, 0);//取消动画
+            startActivity(settingsIntent);
+            return true;
+        }
+        return false;
+    });
+    bottomNavigationView.setSelectedItemId(R.id.nav_history);
+}
+
 
     private void setupButtons() {
         btnDeleteAll.setOnClickListener(v -> showDeleteAllDialog());
@@ -181,7 +207,6 @@ public class HistoryActivity extends AppCompatActivity {
             btnDeleteAll.setVisibility(View.VISIBLE);
         });
     }
-
 
     private void showDeleteDialog(int position) {
         new AlertDialog.Builder(this)

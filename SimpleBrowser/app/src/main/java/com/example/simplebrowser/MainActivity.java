@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -16,12 +17,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.simplebrowser.browser.BrowserActivity;
 import com.example.simplebrowser.history.HistoryActivity;
 import com.example.simplebrowser.scrpit.ScriptManagerActivity;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
     private EditText searchEditText;
     private RadioGroup engineRadioGroup;
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +36,10 @@ public class MainActivity extends AppCompatActivity {
         Button searchButton = findViewById(R.id.searchButton);
         Button historyButton = findViewById(R.id.historyButton);
         Button scriptManagerButton = findViewById(R.id.scriptManagerButton);
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
+        overridePendingTransition(0, 0);  // 添加这行
+        // 设置底部导航栏
+        setupBottomNavigation();
 
         // 设置历史按钮点击事件
         historyButton.setOnClickListener(v -> {
@@ -65,6 +72,32 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void setupBottomNavigation() {
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_back) {
+                finish();
+                return true;
+            } else if (id == R.id.nav_home) {
+                // 已经在主页，无需处理
+                return true;
+            } else if (id == R.id.nav_history) {
+                Intent intent = new Intent(this, HistoryActivity.class);
+                startActivity(intent);
+                overridePendingTransition(0, 0);//取消动画
+                return true;
+            } else if (id == R.id.nav_settings) {
+                // 这里可以添加设置页面的跳转逻辑
+                // 暂时返回到主页
+                return true;
+            }
+            return false;
+        });
+
+        // 高亮显示当前选中的主页菜单项
+        bottomNavigationView.setSelectedItemId(R.id.nav_home);
+    }
+
     private void performSearch() {
         String query = searchEditText.getText().toString().trim();
         if (TextUtils.isEmpty(query)) {
@@ -92,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, BrowserActivity.class);
         intent.putExtra("url", url);
         startActivity(intent);
+        overridePendingTransition(0, 0);
     }
 
     private boolean isUrl(String input) {
