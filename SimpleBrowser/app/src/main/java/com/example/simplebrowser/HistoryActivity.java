@@ -90,27 +90,20 @@ public class HistoryActivity extends AppCompatActivity {
         adapter = new HistoryAdapter(this, historyItems);
         historyListView.setAdapter(adapter);
 
-        // 设置点击事件
-        historyListView.setOnItemClickListener((parent, view, position, id) -> {
-            if (!adapter.isSelectionMode()) {
-                String url = historyItems.get(position).getUrl();
-                returnUrlToBrowser(url);
-            }
-        });
         // 长按删除单项
         historyListView.setOnItemLongClickListener((parent, view, position, id) -> {
             showDeleteDialog(position);
             return true;
         });
 
-        // 点击打开网址
+        // 修改后的点击监听器：直接打开新实例
         historyListView.setOnItemClickListener((parent, view, position, id) -> {
             if (!adapter.isSelectionMode()) {
                 String url = historyItems.get(position).getUrl();
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra("url", url);
-                setResult(RESULT_OK, resultIntent);
-                finish();
+                Intent browserIntent = new Intent(HistoryActivity.this, BrowserActivity.class);
+                browserIntent.putExtra("url", url);
+                startActivity(browserIntent);
+                
             }
         });
 
